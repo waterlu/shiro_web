@@ -98,6 +98,7 @@ public class ShiroConfig {
         sessionManager.setSessionValidationSchedulerEnabled(true);
         Cookie cookie = new SimpleCookie(ShiroHttpSession.DEFAULT_SESSION_ID_NAME);
         cookie.setName("WEBID");
+        cookie.setDomain(".zj-hf.cn");
         cookie.setHttpOnly(true);
         sessionManager.setSessionIdCookie(cookie);
         return sessionManager;
