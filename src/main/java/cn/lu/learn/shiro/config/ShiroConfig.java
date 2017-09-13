@@ -1,5 +1,6 @@
 package cn.lu.learn.shiro.config;
 
+import cn.lu.learn.shiro.security.RedisSessionDAO;
 import cn.lu.learn.shiro.security.UserShiroRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
@@ -89,6 +90,7 @@ public class ShiroConfig {
     @Bean(name="sessionManager")
     public DefaultWebSessionManager defaultWebSessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        sessionManager.setSessionDAO(redisSessionDAO());
         sessionManager.setCacheManager(ehCacheManager());
         sessionManager.setSessionValidationInterval(10*60*1000);
         sessionManager.setGlobalSessionTimeout(30*60*1000);
@@ -99,5 +101,10 @@ public class ShiroConfig {
         cookie.setHttpOnly(true);
         sessionManager.setSessionIdCookie(cookie);
         return sessionManager;
+    }
+
+    @Bean(name = "redisSessionDAO")
+    public RedisSessionDAO redisSessionDAO() {
+        return new RedisSessionDAO();
     }
 }
