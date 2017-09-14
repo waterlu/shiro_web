@@ -2,10 +2,14 @@ package cn.lu.learn.shiro.security;
 
 import cn.lu.learn.shiro.vo.UserVO;
 import com.alibaba.fastjson.JSON;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
+import org.apache.shiro.util.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.HashOperations;
@@ -53,6 +57,20 @@ public class RedisSessionDAO extends EnterpriseCacheSessionDAO {
         if (session == null) {
             ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
             session = (Session) valueOperations.get(prefix + sessionId.toString());
+
+            HashOperations<String, String, String> hashOperations = redisStringTemplate.opsForHash();
+            String jsonString = hashOperations.get(prefix, session.getId().toString());
+            if (null != jsonString) {
+                UserVO user = JSON.parseObject(jsonString, UserVO.class);
+                SimplePrincipalCollection pc = new SimplePrincipalCollection();
+                pc.add(user, "RedisSessionDAO");
+                session.setAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY, pc);
+
+//                Subject subject = ThreadContext.getSubject();
+//                if (null != subject) {
+//                    subject.runAs(pc);
+//                }
+            }
         }
         return session;
     }

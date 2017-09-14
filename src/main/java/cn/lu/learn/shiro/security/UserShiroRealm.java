@@ -23,12 +23,12 @@ public class UserShiroRealm extends AuthorizingRealm {
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
         UserVO userInfo = new UserVO();
         userInfo.setLoginName(username);
-        userInfo.setName("中冀普银财务人员");
-        userInfo.setMobile("13800138000");
+        userInfo.setName("中冀普银运营人员");
+        userInfo.setMobile("13800138001");
         userInfo.setOfficeCode("ZJPY");
         userInfo.setOfficeName("中冀普银");
         userInfo.setUuid("2a8ea5c7fd034727883ca87f7ff70998");
-        userInfo.setRoleName("finance");
+        userInfo.setRoleName("op");
         userInfo.setPassword("e10adc3949ba59abbe56e057f20f883e");
         userInfo.setState(1);
 
@@ -54,8 +54,9 @@ public class UserShiroRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) throws AuthenticationException{
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         UserVO userInfo  = (UserVO)principals.getPrimaryPrincipal();
-        authorizationInfo.addRole("finance");
-        authorizationInfo.addStringPermission("fop:trade:reward:allowance:audit");
+        authorizationInfo.addRole("op");
+//        authorizationInfo.addStringPermission("fop:trade:reward:allowance:audit");
+        authorizationInfo.addStringPermission("fop:advisor:list");
         return authorizationInfo;
     }
 

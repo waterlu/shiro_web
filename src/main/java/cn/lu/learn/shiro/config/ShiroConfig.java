@@ -1,5 +1,6 @@
 package cn.lu.learn.shiro.config;
 
+import cn.lu.learn.shiro.security.MyFormAuthenticationFilter;
 import cn.lu.learn.shiro.security.RedisSessionDAO;
 import cn.lu.learn.shiro.security.UserShiroRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
@@ -14,6 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.servlet.Filter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,6 +34,13 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean shirFilter(DefaultWebSecurityManager securityManager){
         ShiroFilterFactoryBean shiroFilterFactoryBean  = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
+
+        Map<String, Filter> filters = new HashMap<>();
+        filters.put("my", new MyFormAuthenticationFilter());
+        shiroFilterFactoryBean.setFilters(filters);
+
+
+
 
         //配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了
         /**
@@ -49,7 +60,8 @@ public class ShiroConfig {
         Map<String,String> filterChainDefinitionMap = new LinkedHashMap<String,String>();
         filterChainDefinitionMap.put("/api/users/login", "anon");
         filterChainDefinitionMap.put("/api/users/logout", "anon");
-        filterChainDefinitionMap.put("/api/users/**", "authc");
+//        filterChainDefinitionMap.put("/api/users/**", "authc");
+        filterChainDefinitionMap.put("/api/users/**", "my");
         shiroFilterFactoryBean.setLoginUrl("/api/users/login");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
